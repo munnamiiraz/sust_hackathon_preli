@@ -9,41 +9,41 @@ logger = logging.getLogger(__name__)
 # Forbidden content patterns
 # ---------------------------------------------------------------------------
 
-_FORBIDDEN: list[tuple[str, str]] = [
-    (r"\b(pin|otp|one.time.password|password|passcode|card\s*number|cvv|secret\s*code)\b", "credential_request"),
-    (r"\b(share|provide|send|enter|confirm|verify)\s+(your\s+)?(pin|otp|password|passcode)\b", "credential_request"),
-    (r"\bwe\s+will\s+(refund|return|send\s+back|credit)\b", "refund_promise"),
-    (r"\byou\s+will\s+(receive|get)\s+(your\s+)?(money|refund|amount)\b", "refund_promise"),
-    (r"\brefund\s+(has\s+been|will\s+be)\s+(processed|initiated|sent)\b", "refund_promise"),
-    (r"\byour\s+refund\s+is\b", "refund_promise"),
-    (r"\b(whatsapp|telegram|facebook|instagram)\b", "third_party"),
-    (r"https?://", "external_link"),
-    (r"www\.", "external_link"),
+_FORBIDDEN: list[tuple[re.Pattern[str], str]] = [
+    (re.compile(r"\b(pin|otp|one.time.password|password|passcode|card\s*number|cvv|secret\s*code)\b"), "credential_request"),
+    (re.compile(r"\b(share|provide|send|enter|confirm|verify)\s+(your\s+)?(pin|otp|password|passcode)\b"), "credential_request"),
+    (re.compile(r"\bwe\s+will\s+(refund|return|send\s+back|credit)\b"), "refund_promise"),
+    (re.compile(r"\byou\s+will\s+(receive|get)\s+(your\s+)?(money|refund|amount)\b"), "refund_promise"),
+    (re.compile(r"\brefund\s+(has\s+been|will\s+be)\s+(processed|initiated|sent)\b"), "refund_promise"),
+    (re.compile(r"\byour\s+refund\s+is\b"), "refund_promise"),
+    (re.compile(r"\b(whatsapp|telegram|facebook|instagram)\b"), "third_party"),
+    (re.compile(r"https?://"), "external_link"),
+    (re.compile(r"www\."), "external_link"),
 ]
 
-_INJECTION: list[str] = [
-    r"ignore\s+(all\s+)?(previous|prior|above|your)?\s*(instructions?|rules?|prompts?|constraints?)",
-    r"you\s+are\s+now\s+a",
-    r"new\s+(instructions?|system\s+prompt)",
-    r"\bdisregard\b",
-    r"\bact\s+as\b",
-    r"\bpretend\s+(you\s+are|to\s+be)\b",
-    r"\bjailbreak\b",
-    r"forget\s+(all\s+)?(previous|prior)?\s*(instructions?|rules?)",
-    r"\bsystem\s*:\s*",
-    r"\[system\]",
-    r"<\s*system\s*>",
+_INJECTION: list[re.Pattern[str]] = [
+    re.compile(r"ignore\s+(all\s+)?(previous|prior|above|your)?\s*(instructions?|rules?|prompts?|constraints?)"),
+    re.compile(r"you\s+are\s+now\s+a"),
+    re.compile(r"new\s+(instructions?|system\s+prompt)"),
+    re.compile(r"\bdisregard\b"),
+    re.compile(r"\bact\s+as\b"),
+    re.compile(r"\bpretend\s+(you\s+are|to\s+be)\b"),
+    re.compile(r"\bjailbreak\b"),
+    re.compile(r"forget\s+(all\s+)?(previous|prior)?\s*(instructions?|rules?)"),
+    re.compile(r"\bsystem\s*:\s*"),
+    re.compile(r"\[system\]"),
+    re.compile(r"<\s*system\s*>"),
 ]
 
 
 def contains_forbidden(text: str) -> list[str]:
     t = text.lower()
-    return [vtype for pat, vtype in _FORBIDDEN if re.search(pat, t)]
+    return [vtype for pat, vtype in _FORBIDDEN if pat.search(t)]
 
 
 def is_prompt_injection(text: str) -> bool:
     t = text.lower()
-    hit = any(re.search(p, t) for p in _INJECTION)
+    hit = any(p.search(t) for p in _INJECTION)
     if hit:
         logger.warning("Prompt injection detected")
     return hit

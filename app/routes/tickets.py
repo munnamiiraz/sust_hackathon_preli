@@ -3,7 +3,7 @@ from fastapi import APIRouter, Request
 from app.controllers.ticket_controller import analyze_ticket
 from app.schemas.ticket import TicketRequest, TicketResponse
 
-router = APIRouter()
+router = APIRouter(prefix="/v1")
 
 
 @router.post("/analyze-ticket", response_model=TicketResponse)

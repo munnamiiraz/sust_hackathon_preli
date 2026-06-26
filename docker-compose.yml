@@ -1,42 +1,25 @@
+x-app: &app-defaults
+  build: .
+  environment:
+    - PYTHONUNBUFFERED=1
+    - DOCS_ENABLED=true
+    - CORS_ORIGINS=${CORS_ORIGINS:-*}
+  restart: unless-stopped
+  healthcheck:
+    test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+    interval: 10s
+    timeout: 5s
+    retries: 3
+
 services:
   app1:
-    build: .
-    environment:
-      - PYTHONUNBUFFERED=1
-      - DOCS_ENABLED=true
-      - CORS_ORIGINS=*
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
+    <<: *app-defaults
 
   app2:
-    build: .
-    environment:
-      - PYTHONUNBUFFERED=1
-      - DOCS_ENABLED=true
-      - CORS_ORIGINS=*
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
+    <<: *app-defaults
 
   app3:
-    build: .
-    environment:
-      - PYTHONUNBUFFERED=1
-      - DOCS_ENABLED=true
-      - CORS_ORIGINS=*
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
+    <<: *app-defaults
 
   nginx:
     image: nginx:alpine

@@ -11,6 +11,9 @@ from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from starlette.middleware.base import BaseHTTPMiddleware
+
+from prometheus_fastapi_instrumentator import Instrumentator
 
 from app.config import APP_VERSION, CORS_ORIGINS, DOCS_URL, REDOC_URL
 from app.routes.health import router as health_router
@@ -41,6 +44,28 @@ logging.config.dictConfig({
 })
 
 # ---------------------------------------------------------------------------
+# Body size guard — 256 KB matches nginx; protects Render/local single-instance
+# ---------------------------------------------------------------------------
+
+_MAX_BODY_BYTES = 256_000
+
+
+class MaxBodySizeMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        content_length = request.headers.get("content-length")
+        if content_length is not None:
+            try:
+                if int(content_length) > _MAX_BODY_BYTES:
+                    return JSONResponse(
+                        status_code=413,
+                        content={"error": "request body too large", "max_bytes": _MAX_BODY_BYTES},
+                    )
+            except ValueError:
+                return JSONResponse(status_code=400, content={"error": "invalid content-length header"})
+        return await call_next(request)
+
+
+# ---------------------------------------------------------------------------
 # App
 # ---------------------------------------------------------------------------
 
@@ -52,6 +77,7 @@ app = FastAPI(
     redoc_url=REDOC_URL,
 )
 
+app.add_middleware(MaxBodySizeMiddleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=CORS_ORIGINS,
@@ -81,6 +107,8 @@ async def request_id_middleware(request: Request, call_next: Callable):
 
 app.include_router(health_router)
 app.include_router(tickets_router)
+
+Instrumentator().instrument(app).expose(app)
 
 # ---------------------------------------------------------------------------
 # Exception handlers — never leak stack traces

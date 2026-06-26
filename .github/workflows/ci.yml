@@ -21,8 +21,17 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt -r requirements-dev.txt
 
-      - name: Run tests
-        run: pytest tests/ -v --tb=short
+      - name: Audit dependencies
+        run: pip-audit -r requirements.txt
+
+      - name: Lint
+        run: ruff check app/ tests/
+
+      - name: Type check
+        run: mypy app/ --ignore-missing-imports --python-version 3.11
+
+      - name: Test with coverage
+        run: pytest tests/ -v --tb=short --cov=app --cov-fail-under=85
 
   docker:
     name: Build Docker image
