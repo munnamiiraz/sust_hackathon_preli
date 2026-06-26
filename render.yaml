@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: ticket-investigator-copilot
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: DOCS_ENABLED
+        value: "true"
+      - key: CORS_ORIGINS
+        value: "*"
+    healthCheckPath: /health
