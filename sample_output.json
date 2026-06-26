@@ -1,0 +1,31 @@
+{
+  "request": {
+    "ticket_id": "TKT-SAMPLE-01",
+    "complaint": "I sent 5000 taka to the wrong number by mistake. Please help me recover it.",
+    "language": "en",
+    "transaction_history": [
+      {
+        "transaction_id": "TXN-9101",
+        "timestamp": "2026-04-14T14:22:00Z",
+        "type": "transfer",
+        "amount": 5000.0,
+        "counterparty": "+8801711111111",
+        "status": "completed"
+      }
+    ]
+  },
+  "response": {
+    "ticket_id": "TKT-SAMPLE-01",
+    "relevant_transaction_id": "TXN-9101",
+    "evidence_verdict": "consistent",
+    "case_type": "wrong_transfer",
+    "severity": "high",
+    "department": "dispute_resolution",
+    "agent_summary": "Customer reports a Wrong Transfer issue. Transaction TXN-9101 identified. Transaction history supports the claim.",
+    "recommended_next_action": "Escalate to dispute_resolution. Verify transaction and initiate recovery process per policy.",
+    "customer_reply": "Thank you for reaching out. We have received your report regarding a transfer concern. Our team will investigate thoroughly. Any eligible amount will be processed through official channels. A specialist will personally review your case. For further assistance, please contact our official support channels.",
+    "human_review_required": true,
+    "confidence": 0.9,
+    "reason_codes": ["wrong_transfer", "consistent", "transaction_match", "escalation_required"]
+  }
+}
