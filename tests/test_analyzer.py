@@ -1,6 +1,7 @@
 import pytest
+
 from tests.conftest import make_tx
-from app.analyzer import (
+from app.services.analysis_service import (
     classify_case_type,
     find_relevant_transaction,
     decide_evidence_verdict,
@@ -8,9 +9,8 @@ from app.analyzer import (
     classify_department,
     should_require_human_review,
     calculate_confidence,
-    _normalize_complaint,
-    _extract_hours,
 )
+from app.utils.text import _normalize_complaint, _extract_hours
 
 
 # ---------------------------------------------------------------------------
@@ -34,7 +34,6 @@ def test_classify_case_type(complaint, expected):
 
 
 def test_phishing_takes_priority_over_wrong_transfer():
-    # OTP keyword should win over "wrong" being present
     assert classify_case_type("Someone shared wrong OTP to hack my account", []) == "phishing_or_social_engineering"
 
 

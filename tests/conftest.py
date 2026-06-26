@@ -1,6 +1,6 @@
-from datetime import datetime, timezone
-import pytest
-from app.models import TransactionEntry
+from datetime import datetime
+
+from app.schemas.ticket import TransactionEntry
 
 
 def make_tx(

@@ -1,6 +1,7 @@
 import pytest
 from pydantic import ValidationError
-from app.models import TicketRequest, TransactionEntry
+
+from app.schemas.ticket import TicketRequest, TransactionEntry
 
 TX_BASE = {
     "transaction_id": "TXN-1",
