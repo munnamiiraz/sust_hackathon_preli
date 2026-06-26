@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from typing import Optional
+from typing import Any, Optional, cast
 
 from app.schemas.ticket import TicketRequest, TicketResponse, TransactionEntry
 from app.utils.text import (
@@ -378,10 +378,10 @@ def analyze(request: TicketRequest) -> TicketResponse:
     return TicketResponse(
         ticket_id=request.ticket_id,
         relevant_transaction_id=relevant_tx_id,
-        evidence_verdict=evidence,
-        case_type=case_type,
-        severity=severity,
-        department=department,
+        evidence_verdict=cast(Any, evidence),
+        case_type=cast(Any, case_type),
+        severity=cast(Any, severity),
+        department=cast(Any, department),
         agent_summary=build_agent_summary(case_type, evidence, relevant_tx_id),
         recommended_next_action="",
         customer_reply="",

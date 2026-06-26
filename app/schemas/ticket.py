@@ -32,7 +32,7 @@ class TicketRequest(BaseModel):
     ]] = None
     user_type: Optional[Literal["customer", "merchant", "agent", "unknown"]] = None
     campaign_context: Optional[str] = Field(None, max_length=512)
-    transaction_history: Optional[List[TransactionEntry]] = Field(
+    transaction_history: List[TransactionEntry] = Field(
         default_factory=list, max_length=_MAX_TX_COUNT
     )
 
